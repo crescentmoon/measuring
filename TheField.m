@@ -8,6 +8,44 @@
 
 #import "TheField.h"
 
+static NSString *longFormOf (char c)
+{
+	NSString *result;
+	char s[2];
+	switch(c){
+		case 't':
+			result = @"<tab>";
+			break;
+		case 'c':
+			result = @"<caps lock>";
+			break;
+		case 'l':
+			result = @"<left shift>";
+			break;
+		case 'r':
+			result = @"<right shift>";
+			break;
+		default:
+			s[0] = c;
+			s[1] = '\0';
+				result = [[NSString alloc] initWithUTF8String:s];
+			[result autorelease];
+	}
+	return result;
+}
+
+static NSString *longFormOf2 (char c1, char c2)
+{
+	NSString *s1 = longFormOf(c1);
+	NSString *s2 = longFormOf(c2);
+	NSString *result;
+	if(islower(c1) || islower(c2)){
+		result = [[s1 stringByAppendingString:@" "] stringByAppendingString:s2];
+	}else{
+		result = [s1 stringByAppendingString:s2];
+	}
+	return result;
+}
 
 @implementation TheField
 
@@ -54,13 +92,8 @@
 	}
 	//測定の準備をする
 	key_pair_t pair = [data wanted];
-	char s[3];
-	s[0] = charOfKey(pair.first);
-	s[1] = charOfKey(pair.second);
-	s[2] = '\0';
-	NSString *sobj = [[NSString alloc] initWithUTF8String:s];
+	NSString *sobj = longFormOf2(charOfKey(pair.first), charOfKey(pair.second));
 	[guide setStringValue:sobj];
-	[sobj release];
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -115,11 +148,9 @@
 	if(firstTime == nil && key == wanted.first){
 		NSLog(@"first");
 		//入力文字
-		char s[2];
-		s[0] = charOfKey(key);
-		s[1] = '\0';
 		[inputed release];
-		inputed = [[NSString alloc] initWithUTF8String:s];
+		inputed = longFormOf(charOfKey(key));
+		[inputed retain];
 		//時間
 		firstTime = [NSDate date];
 		[firstTime retain];
@@ -132,12 +163,9 @@
 		int32_t msec = (int32_t)(interval * 1000.0);
 		[data add:wanted mesc:msec];
 		//完成
-		char s[3];
-		s[0] = charOfKey(wanted.first);
-		s[1] = charOfKey(wanted.second);
-		s[2] = '\0';
 		[inputed release];
-		inputed = [[NSString alloc] initWithUTF8String:s];
+		inputed = longFormOf2(charOfKey(wanted.first), charOfKey(wanted.second));
+		[inputed retain];
 		//時間クリア
 		[firstTime release];
 		firstTime = nil;
@@ -164,7 +192,12 @@
 {
 	NSString *s = [event charactersIgnoringModifiers];
 	char const *img = [s UTF8String];
-	key_t key = keyOfChar(toupper(img[0]));
+	key_t key;
+	if(img[0] == '\t'){
+		key = keyTab;
+	}else{
+		key = keyOfChar(toupper(img[0]));
+	}
 	if(key >= 0){
 		[self handeKeyDown:key];
 	}
@@ -176,13 +209,13 @@
 	NSLog(@"%x", flags);
 	if (((flags & NSAlphaShiftKeyMask) == NSAlphaShiftKeyMask) != prevCapsLock) {
 		prevCapsLock = !prevCapsLock;
-		[self handeKeyDown:12]; /* CAPS LOCK */
+		[self handeKeyDown:keyCapsLock]; /* CAPS LOCK */
 	}
 	if ((flags & NSShiftKeyMask) == NSShiftKeyMask) {
 		if(flags & 2){
-			[self handeKeyDown:18]; /* 左シフト */
+			[self handeKeyDown:keyLeftShift]; /* 左シフト */
 		}else if(flags & 4){
-			[self handeKeyDown:(keyNumOfHand + 23)]; /* 右シフト */
+			[self handeKeyDown:keyRightShift]; /* 右シフト */
 		}
 	}
 }

@@ -1289,12 +1289,12 @@
 						<object class="NSTextField" id="274697719">
 							<reference key="NSNextResponder" ref="439893737"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{297, 306}, {128, 17}}</string>
+							<string key="NSFrame">{{83, 306}, {307, 17}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="327297127">
 								<int key="NSCellFlags">67239488</int>
-								<int key="NSCellFlags2">272668736</int>
+								<int key="NSCellFlags2">71342144</int>
 								<string key="NSContents">Input Guide</string>
 								<object class="NSFont" key="NSSupport" id="534619594">
 									<string key="NSName">LucidaGrande</string>
@@ -6045,7 +6045,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABB4AAAw6EAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABDiwAAw6CAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>

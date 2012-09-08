@@ -14,6 +14,13 @@ enum { keyNumOfHand = 24 };
 
 typedef int key_t;
 
+enum {
+	keyTab = 11,
+	keyCapsLock = 17,
+	keyLeftShift = 23,
+	keyRightShift = keyNumOfHand + 23
+};
+
 extern char charOfKey(key_t k);
 extern key_t keyOfChar(char c);
 

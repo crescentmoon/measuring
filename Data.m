@@ -11,10 +11,10 @@
 #import <stdio.h>
 
 static char charOfKeyTable[keyNumOfHand * 2] = {
-	'`', '1', '2', '3', '4', '5',
-	't', 'Q', 'W', 'E', 'R', 'T',
-	'c', 'A', 'S', 'D', 'F', 'G',
-	'l', 'Z', 'X', 'C', 'V', 'B',
+	'5', '4', '3', '2', '1', '`',
+	'T', 'R', 'E', 'W', 'Q', 't',
+	'G', 'F', 'D', 'S', 'A', 'c',
+	'B', 'V', 'C', 'X', 'Z', 'l',
 	'6', '7', '8', '9', '0', '-',
 	'Y', 'U', 'I', 'O', 'P', '[',
 	'H', 'J', 'K', 'L', ';', '\'',
@@ -32,7 +32,6 @@ key_t keyOfChar(char c)
 			return i;
 		}
 	}
-	if(c == '\t') return 6; /* TAB */
 	return -1;
 }
 

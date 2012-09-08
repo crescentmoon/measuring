@@ -8,6 +8,10 @@
 
 #import "DataSource.h"
 
+static key_t keyOfSightOrder(hand_t hand, int i)
+{
+	return (hand == handLeft) ? ((i / 6) * 6) + (5 - (i % 6)) : keyNumOfHand + i;
+}
 
 @implementation DataSource
 
@@ -32,10 +36,11 @@
 		view = tableView;
 		columnsInitialized = true;
 		for(int i = 0; i < keyNumOfHand; ++i){
+			key_t key = keyOfSightOrder(hand, i);
 			NSArray *columns = [tableView tableColumns];
 			NSTableColumn *column = [columns objectAtIndex:(i + 1)];
 			char s[2];
-			s[0] = charOfKey(((hand == handLeft) ? 0 : keyNumOfHand) + i);
+			s[0] = charOfKey(key);
 			s[1] = '\0';
 			NSString *sobj = [[NSString alloc] initWithCString:s];
 			[column setIdentifier:sobj];
@@ -49,7 +54,7 @@
 - (id)tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row
 {
 	NSString *ident = [tableColumn identifier];
-	key_t first = ((hand == handLeft) ? 0 : keyNumOfHand) + row;
+	key_t first = keyOfSightOrder(hand, row);
 	if([ident isEqualToString:@"from"]){
 		char s[2];
 		s[0] = charOfKey(first);
