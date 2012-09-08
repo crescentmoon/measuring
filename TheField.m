@@ -201,8 +201,7 @@
 		filename = the_filename;
 		[filename retain];
 		[old_filename release];
-		//問題差し替え
-		[data regenerateWanted];
+		//問題も差し替えられているはず
 		[self readyMeasuring];
 		//再描画
 		[self setNeedsDisplay:YES];

@@ -10,7 +10,7 @@
 #import <stdlib.h>
 #import <stdio.h>
 
-char charOfKeyTable[keyNumOfHand * 2] = {
+static char charOfKeyTable[keyNumOfHand * 2] = {
 	'`', '1', '2', '3', '4', '5',
 	't', 'Q', 'W', 'E', 'R', 'T',
 	'c', 'A', 'S', 'D', 'F', 'G',
@@ -36,41 +36,120 @@ key_t keyOfChar(char c)
 	return -1;
 }
 
-void sort(int32_t *items, int count)
+static void insert(int32_t *items, int count, int32_t new_item)
 {
+	int j = count;
+	while(j > 0 && new_item < items[j - 1]){
+		items[j] = items[j - 1];
+		-- j;
+	}
+	items[j] = new_item;
+}
+
+static void sort(int32_t *items, int count)
+{
+	for(int i = 1; i < count; ++ i){
+		insert(items, i, items[i]);
+	}
+}
+
+static int32_t median(key_record_t const *rec)
+{
+	int32_t result;
+	if(rec->count == 0){
+		result = 0;
+	}else{
+		result = rec->msec[(rec->count - 1) / 2];
+	}
+	return result;
+}
+
+static bool is_filled(key_record_t (*items)[handNum][keyNumOfHand][keyNumOfHand])
+{
+	for(hand_t hand = 0; hand < handNum; ++hand){
+		for(int i = 0; i < keyNumOfHand; ++i){
+			for(int j = 0; j < keyNumOfHand; ++j){
+				if((*items)[hand][i][j].count == 0){
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_item)
+{
+	for(int i = 0; i < wanted_stack->count; ++ i){
+		if(wanted_stack->items[i].first == new_item.first && wanted_stack->items[i].second == new_item.second){
+			return; /* 既に追加済み */
+		}
+	}
+	wanted_stack->items[wanted_stack->count] = new_item;
+	++ wanted_stack->count;
 }
 
 @implementation Data
 
 - (void)updateWanted
 {
-	key_pair_t candidates[keyNumOfHand * keyNumOfHand * 2];
-	int candidate_count = 0;
-	int n = INT_MAX;
-	for(hand_t hand = 0; hand < handNum; ++hand){
-		for(int i = 0; i < keyNumOfHand; ++i){
-			for(int j = 0; j < keyNumOfHand; ++j){
-				key_t first = (hand == handLeft) ? i : i + keyNumOfHand;
-				key_t second = (hand == handLeft) ? j : j + keyNumOfHand;;
-				if(items[hand][i][j].count < n){
-					n = items[hand][i][j].count;
-					candidates[0].first = first;
-					candidates[0].second = second;
-					candidate_count = 1;
-				} else if(items[hand][i][j].count == n){
-					candidates[candidate_count].first = first;
-					candidates[candidate_count].second = second;
-					++ candidate_count;
+	/* データが欲しい組み合わせを列挙 */
+	if(wanted_stack.count == 0){
+		/* 全部埋まっているかチェック */
+		bool filled = is_filled(&items);
+		/* 全てのデータが埋まっている場合のみ、不自然データのチェック */
+		if(filled){
+			/* 1000msを超えていたらいくらなんでもおかしいと思う */
+			for(hand_t hand = 0; hand < handNum; ++hand){
+				for(int i = 0; i < keyNumOfHand; ++i){
+					for(int j = 0; j < keyNumOfHand; ++j){
+						if(median(&items[hand][i][j]) >= 1000){
+							key_pair_t new_item;
+							new_item.first = (hand == handLeft) ? i : i + keyNumOfHand;
+							new_item.second = (hand == handLeft) ? j : j + keyNumOfHand;;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+				}
+			}
+		}
+		/* 少ないデータを求める */
+		if(wanted_stack.count == 0){
+			int n = INT_MAX;
+			for(hand_t hand = 0; hand < handNum; ++hand){
+				for(int i = 0; i < keyNumOfHand; ++i){
+					for(int j = 0; j < keyNumOfHand; ++j){
+						key_t first = (hand == handLeft) ? i : i + keyNumOfHand;
+						key_t second = (hand == handLeft) ? j : j + keyNumOfHand;;
+						if(items[hand][i][j].count < n){
+							n = items[hand][i][j].count;
+							wanted_stack.items[0].first = first;
+							wanted_stack.items[0].second = second;
+							wanted_stack.count = 1;
+						} else if(items[hand][i][j].count == n){
+							wanted_stack.items[wanted_stack.count].first = first;
+							wanted_stack.items[wanted_stack.count].second = second;
+							++ wanted_stack.count;
+						}
+					}
 				}
 			}
 		}
 	}
-	if(candidate_count == 0){
+	/* 出題 */
+	if(wanted_stack.count == 0){
 		NSLog(@"maybe bug");
-		wanted.first = 0;
-		wanted.second = 0;
+		current_wanted.first = 0;
+		current_wanted.second = 0;
 	}else{
-		wanted = candidates[rand() % candidate_count];
+		/* ランダムに出題 */
+		int wanted_index = rand() % wanted_stack.count;
+		current_wanted = wanted_stack.items[wanted_index];
+		/* 出題した分を取り除く */
+		-- wanted_stack.count;
+		for(int i = wanted_index; i < wanted_stack.count; ++i){
+			wanted_stack.items[i] = wanted_stack.items[i + 1];
+		}
 	}
 }
 
@@ -84,18 +163,14 @@ void sort(int32_t *items, int count)
 			}
 		}
 	}
+	wanted_stack.count = 0;
 	[self updateWanted];
 	return self;
 }
 
 - (key_pair_t)wanted
 {
-	return wanted;
-}
-
-- (void)regenerateWanted
-{
-	[self updateWanted];
+	return current_wanted;
 }
 
 - (void)add:(key_pair_t)seq mesc:(int32_t)msec
@@ -106,15 +181,14 @@ void sort(int32_t *items, int count)
 		int secondIndex = (hand == handLeft) ? seq.second : seq.second - keyNumOfHand;
 		key_record_t *rec = &items[hand][firstIndex][secondIndex];
 		if(rec->count >= recordNum){
-			sort(rec->msec, rec->count);
 			//最低値と最大値を取り除く
 			for(int i = 1; i < rec->count - 1; ++i){
 				rec->msec[i - 1] = rec->msec[i];
 			}
 			rec->count -= 2;
 		}
-		int recIndex = rec->count;
-		rec->msec[recIndex] = msec;
+		//追加
+		insert(rec->msec, rec->count, msec);
 		++ rec->count;
 		//次を準備
 		[self updateWanted];
@@ -128,12 +202,8 @@ void sort(int32_t *items, int count)
 	if(hand == handOf(seq.second)){
 		int firstIndex = (hand == handLeft) ? seq.first : seq.first - keyNumOfHand;
 		int secondIndex = (hand == handLeft) ? seq.second : seq.second - keyNumOfHand;
-		if(items[hand][firstIndex][secondIndex].count > 0){
-			for(int i = 0; i < items[hand][firstIndex][secondIndex].count; ++i){
-				result += items[hand][firstIndex][secondIndex].msec[i];
-			}
-			result /= items[hand][firstIndex][secondIndex].count;
-		}
+		key_record_t *rec = &items[hand][firstIndex][secondIndex];
+		result = median(rec); /* 中央値 */
 	}
 	return result;
 }
@@ -148,13 +218,13 @@ void sort(int32_t *items, int count)
 		for(hand_t hand = 0; hand < handNum; ++hand){
 			for(int i = 0; i < keyNumOfHand; ++i){
 				for(int j = 0; j < keyNumOfHand; ++j){
-					int32_t *msec = items[hand][i][j].msec;
+					key_record_t *rec = &items[hand][i][j];
 					/* clear unused area */
-					for(int k = items[hand][i][j].count; k < recordNum; ++k){
-						msec[k] = 0;
+					for(int k = rec->count; k < recordNum; ++k){
+						rec->msec[k] = 0;
 					}
 					/* write */
-					if(fwrite(msec, sizeof(int32_t), recordNum, file) < recordNum) goto error;
+					if(fwrite(rec->msec, sizeof(int32_t), recordNum, file) < recordNum) goto error;
 				}
 			}
 		}
@@ -175,20 +245,27 @@ void sort(int32_t *items, int count)
 		for(hand_t hand = 0; hand < handNum; ++hand){
 			for(int i = 0; i < keyNumOfHand; ++i){
 				for(int j = 0; j < keyNumOfHand; ++j){
-					int32_t *msec = items[hand][i][j].msec;
+					key_record_t *rec = &items[hand][i][j];
 					/* read */
-					if(fread(msec, sizeof(int32_t), recordNum, file) < recordNum) goto error;
+					if(fread(rec->msec, sizeof(int32_t), recordNum, file) < recordNum) goto error;
 					/* 数える */
-					items[hand][i][j].count = recordNum;
-					while(items[hand][i][j].count > 0 && msec[items[hand][i][j].count - 1] == 0){
-						-- items[hand][i][j].count;
+					rec->count = recordNum;
+					while(rec->count > 0 && rec->msec[rec->count - 1] == 0){
+						-- rec->count;
 					}
+					/* ソートしておく */
+					sort(rec->msec, rec->count);
 				}
 			}
 		}
 		result = YES;
 	error:
 		if(fclose(file) < 0) result = NO;
+	}
+	//問題差し替え
+	if(result){
+		wanted_stack.count = 0;
+		[self updateWanted];
 	}
 	return result;
 }

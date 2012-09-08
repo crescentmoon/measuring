@@ -32,13 +32,18 @@ typedef struct {
 	key_t second;
 } key_pair_t;
 
+typedef struct {
+	key_pair_t items[handNum * keyNumOfHand * keyNumOfHand];
+	int count;
+} wanted_stack_t;
+
 @interface Data : NSObject {
 	key_record_t items[handNum][keyNumOfHand][keyNumOfHand];
-	key_pair_t wanted;
+	wanted_stack_t wanted_stack;
+	key_pair_t current_wanted;
 }
 
 - (key_pair_t)wanted;
-- (void)regenerateWanted;
 - (void)add:(key_pair_t)seq mesc:(int32_t)msec;
 
 - (int32_t)msecOf:(key_pair_t)seq;
