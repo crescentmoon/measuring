@@ -17,7 +17,11 @@ typedef int key_t;
 enum {
 	keyTab = 11,
 	keyCapsLock = 17,
+	keyB = 18,
+	keyV = 19,
 	keyLeftShift = 23,
+	keyY = keyNumOfHand + 6,
+	keyU = keyNumOfHand + 7,
 	keyRightShift = keyNumOfHand + 23
 };
 

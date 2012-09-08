@@ -19,7 +19,7 @@ static char charOfKeyTable[keyNumOfHand * 2] = {
 	'Y', 'U', 'I', 'O', 'P', '[',
 	'H', 'J', 'K', 'L', ';', '\'',
 	'N', 'M', ',', '.', '/', 'r'};
-	
+
 char charOfKey(key_t k)
 {
 	return charOfKeyTable[k];
@@ -108,6 +108,56 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 							new_item.second = (hand == handLeft) ? j : j + keyNumOfHand;;
 							push_to_wanted_stack(&wanted_stack, new_item);
 						}
+					}
+				}
+			}
+			/* VよりもBのほうが速かったからおかしいよね？ */
+			for(key_t pre = 0; pre < keyNumOfHand; ++pre){
+				if(pre % 6 >= 2){ /* 人差し指以外 */
+					if(median(&items[handLeft][pre][keyV]) > median(&items[handLeft][pre][keyB])){
+						key_pair_t new_item;
+						new_item.first = pre;
+						new_item.second = keyB;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.second = keyV;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
+			for(key_t snd = 0; snd < keyNumOfHand; ++snd){
+				if(snd % 6 >= 2){ /* 人差し指以外 */
+					if(median(&items[handLeft][keyV][snd]) > median(&items[handLeft][keyB][snd])){
+						key_pair_t new_item;
+						new_item.first = keyB;
+						new_item.second = snd;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.first = keyV;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
+			/* UよりもYのほうが速かったらおかしいよね？ */
+			for(key_t pre = keyNumOfHand; pre < 2 * keyNumOfHand; ++pre){
+				if(pre % 6 >= 2){ /* 人差し指以外 */
+					if(median(&items[handRight][pre - keyNumOfHand][keyU - keyNumOfHand]) > median(&items[handRight][pre - keyNumOfHand][keyY - keyNumOfHand])){
+						key_pair_t new_item;
+						new_item.first = pre;
+						new_item.second = keyY;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.second = keyU;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
+			for(key_t snd = keyNumOfHand; snd < 2 * keyNumOfHand; ++snd){
+				if(snd % 6 >= 2){ /* 人差し指以外 */
+					if(median(&items[handRight][keyU - keyNumOfHand][snd - keyNumOfHand]) > median(&items[handRight][keyY - keyNumOfHand][snd - keyNumOfHand])){
+						key_pair_t new_item;
+						new_item.first = keyY;
+						new_item.second = snd;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.first = keyU;
+						push_to_wanted_stack(&wanted_stack, new_item);
 					}
 				}
 			}
