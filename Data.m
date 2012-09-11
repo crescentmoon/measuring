@@ -161,6 +161,66 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 					}
 				}
 			}
+			/* 跳躍が一段差よりも速かったらおかしいよね？(左手上から下) */
+			for(key_t pre = 0; pre < keyNumOfHand; ++pre){
+				for(key_t snd_1 = (pre / 6) * 6 + 6; snd_1 < keyNumOfHand - 6; ++snd_1){
+					key_t snd_2 = snd_1 + 6;
+					NSAssert(snd_2 < keyNumOfHand, @"bad snd_2");
+					if(median(&items[handLeft][pre][snd_1]) > median(&items[handLeft][pre][snd_2])){
+						key_pair_t new_item;
+						new_item.first = pre;
+						new_item.second = snd_1;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.second = snd_2;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
+			/* 跳躍が一段差よりも速かったらおかしいよね？(右手上から下) */
+			for(key_t pre = keyNumOfHand; pre < 2 * keyNumOfHand; ++pre){
+				for(key_t snd_1 = (pre / 6) * 6 + 6; snd_1 < 2 * keyNumOfHand - 6; ++snd_1){
+					key_t snd_2 = snd_1 + 6;
+					NSAssert(snd_2 < 2 * keyNumOfHand, @"bad snd_2");
+					if(median(&items[handRight][pre - keyNumOfHand][snd_1 - keyNumOfHand]) > median(&items[handRight][pre - keyNumOfHand][snd_2 - keyNumOfHand])){
+						key_pair_t new_item;
+						new_item.first = pre;
+						new_item.second = snd_1;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.second = snd_2;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
+			/* 跳躍が一段差よりも速かったらおかしいよね？(左手下から上) */
+			for(key_t pre = 12; pre < keyNumOfHand; ++pre){
+				for(key_t snd_1 = 6; snd_1 < (pre / 6) * 6; ++snd_1){
+					key_t snd_2 = snd_1 - 6;
+					NSAssert(snd_2 >= 0, @"bad snd_2");
+					if(median(&items[handLeft][pre][snd_1]) > median(&items[handLeft][pre][snd_2])){
+						key_pair_t new_item;
+						new_item.first = pre;
+						new_item.second = snd_1;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.second = snd_2;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
+			/* 跳躍が一段差よりも速かったらおかしいよね？(右手下から上) */
+			for(key_t pre = 12 + keyNumOfHand; pre < 2 * keyNumOfHand; ++pre){
+				for(key_t snd_1 = 6 + keyNumOfHand; snd_1 < (pre / 6) * 6; ++snd_1){
+					key_t snd_2 = snd_1 - 6;
+					NSAssert(snd_2 >= keyNumOfHand, @"bad snd_2");
+					if(median(&items[handRight][pre - keyNumOfHand][snd_1 - keyNumOfHand]) > median(&items[handRight][pre - keyNumOfHand][snd_2 - keyNumOfHand])){
+						key_pair_t new_item;
+						new_item.first = pre;
+						new_item.second = snd_1;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.second = snd_2;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
 		}
 		/* 少ないデータを求める */
 		if(wanted_stack.count == 0){

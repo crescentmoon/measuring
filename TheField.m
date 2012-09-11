@@ -145,18 +145,7 @@ static NSString *longFormOf2 (char c1, char c2)
 - (void)handeKeyDown:(key_t) key
 {
 	key_pair_t wanted = [data wanted];
-	if(firstTime == nil && key == wanted.first){
-		NSLog(@"first");
-		//入力文字
-		[inputed release];
-		inputed = longFormOf(charOfKey(key));
-		[inputed retain];
-		//時間
-		firstTime = [NSDate date];
-		[firstTime retain];
-		//再描画
-		[self setNeedsDisplay:YES];
-	}else if(firstTime != nil && key == wanted.second){
+	if(firstTime != nil && key == wanted.second){
 		NSLog(@"second");
 		NSDate *secondTime = [NSDate date];
 		NSTimeInterval interval = [secondTime timeIntervalSinceDate:firstTime];
@@ -178,6 +167,18 @@ static NSString *longFormOf2 (char c1, char c2)
 		}else{
 			[rightDataSource setNeedsDisplay:YES];
 		}
+	}else if(key == wanted.first){
+		NSLog(@"first");
+		//入力文字
+		[inputed release];
+		inputed = longFormOf(charOfKey(key));
+		[inputed retain];
+		//時間
+		[firstTime release];
+		firstTime = [NSDate date];
+		[firstTime retain];
+		//再描画
+		[self setNeedsDisplay:YES];
 	}else{
 		[inputed release];
 		inputed = [[NSString alloc] initWithString:@""];
