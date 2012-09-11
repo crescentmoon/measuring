@@ -221,6 +221,36 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 					}
 				}
 			}
+			/* A,S,Dからは、Fが一番速いはずだよね？ */
+			for(key_t pre = keyD; pre <= keyA; ++pre){
+				for(key_t snd = 0; snd < keyNumOfHand; ++snd){
+					if(snd % 6 < 2 && snd != keyF){ /* 人差し指のみ */
+						if(median(&items[handLeft][pre][keyF]) > median(&items[handLeft][pre][snd])){
+							key_pair_t new_item;
+							new_item.first = pre;
+							new_item.second = keyF;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+				}
+			}
+			/* ;,L,Kからは、Jが一番速いはずだよね？ */
+			for(key_t pre = keyK; pre <= keySemicolon; ++pre){
+				for(key_t snd = keyNumOfHand; snd < 2 * keyNumOfHand; ++snd){
+					if(snd % 6 < 2 && snd != keyJ){ /* 人差し指のみ */
+						if(median(&items[handRight][pre - keyNumOfHand][keyJ - keyNumOfHand]) > median(&items[handRight][pre - keyNumOfHand][snd - keyNumOfHand])){
+							key_pair_t new_item;
+							new_item.first = pre;
+							new_item.second = keyJ;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+				}
+			}
 		}
 		/* 少ないデータを求める */
 		if(wanted_stack.count == 0){

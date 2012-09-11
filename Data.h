@@ -15,13 +15,22 @@ enum { keyNumOfHand = 24 };
 typedef int key_t;
 
 enum {
+	keyR = 7,
 	keyTab = 11,
+	keyF = 13,
+	keyD = 14,
+	keyS = 15,
+	keyA = 16,
 	keyCapsLock = 17,
 	keyB = 18,
 	keyV = 19,
 	keyLeftShift = 23,
 	keyY = keyNumOfHand + 6,
 	keyU = keyNumOfHand + 7,
+	keyJ = keyNumOfHand + 13,
+	keyK = keyNumOfHand + 14,
+	keyL = keyNumOfHand + 15,
+	keySemicolon = keyNumOfHand + 16,
 	keyRightShift = keyNumOfHand + 23
 };
 
