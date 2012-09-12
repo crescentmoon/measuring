@@ -251,6 +251,31 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 					}
 				}
 			}
+			/* ZはXより速くあって欲しい…(願望) */
+			for(key_t pre = 0; pre < keyNumOfHand; ++pre){
+				if(pre % 6 <= 2 && pre < keyB){ /* 人差し指と中指のキーが対象、隣のCVBキーはXが速くていい */
+					if(median(&items[handLeft][pre][keyZ]) > median(&items[handLeft][pre][keyX])){
+						key_pair_t new_item;
+						new_item.first = pre;
+						new_item.second = keyZ;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.second = keyX;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
+			for(key_t snd = 0; snd < keyNumOfHand; ++snd){
+				if(snd % 6 <= 2 && snd < keyB){ /* 人差し指と中指のキーが対象、隣のCVBキーはXが速くていい */
+					if(median(&items[handLeft][keyZ][snd]) > median(&items[handLeft][keyX][snd])){
+						key_pair_t new_item;
+						new_item.first = keyZ;
+						new_item.second = snd;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.first = keyX;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
 		}
 		/* 少ないデータを求める */
 		if(wanted_stack.count == 0){
