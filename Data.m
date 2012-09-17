@@ -276,6 +276,48 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 					}
 				}
 			}
+			/* E→Q < R→Q < T→Q < G→Q (願望) */
+			if(median(&items[handLeft][keyE][keyQ]) > median(&items[handLeft][keyR][keyQ])){
+				key_pair_t new_item;
+				new_item.first = keyE;
+				new_item.second = keyQ;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.first = keyR;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
+			if(median(&items[handLeft][keyR][keyQ]) > median(&items[handLeft][keyT][keyQ])){
+				key_pair_t new_item;
+				new_item.first = keyR;
+				new_item.second = keyQ;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.first = keyT;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
+			if(median(&items[handLeft][keyT][keyQ]) > median(&items[handLeft][keyG][keyQ])){
+				key_pair_t new_item;
+				new_item.first = keyT;
+				new_item.second = keyQ;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.first = keyG;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
+			/* I→P < U→P < Y→P (願望) */
+			if(median(&items[handRight][keyI - keyNumOfHand][keyP - keyNumOfHand]) > median(&items[handRight][keyU - keyNumOfHand][keyP - keyNumOfHand])){
+				key_pair_t new_item;
+				new_item.first = keyI;
+				new_item.second = keyP;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.first = keyU;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
+			if(median(&items[handRight][keyU - keyNumOfHand][keyP - keyNumOfHand]) > median(&items[handRight][keyY - keyNumOfHand][keyP - keyNumOfHand])){
+				key_pair_t new_item;
+				new_item.first = keyU;
+				new_item.second = keyP;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.first = keyY;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
 		}
 		/* 少ないデータを求める */
 		if(wanted_stack.count == 0){
