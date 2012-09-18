@@ -221,6 +221,39 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 					}
 				}
 			}
+			/* 同じ指の連打が余りにも違いすぎたらおかしいよね？ */
+			for(key_t key = 0; key < 18; ++key){
+				key_t snd = key + 6;
+				int32_t a = median(&items[handLeft][key][key]);
+				int32_t b = median(&items[handLeft][snd][snd]);
+				int32_t lo = MIN(a, b);
+				int32_t hi = MAX(a, b);
+				if(hi > lo * 4 / 3){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.first = snd;
+					new_item.second = snd;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			for(key_t key = keyNumOfHand; key < keyNumOfHand + 18; ++key){
+				key_t snd = key + 6;
+				int32_t a = median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand]);
+				int32_t b = median(&items[handRight][snd - keyNumOfHand][snd - keyNumOfHand]);
+				int32_t lo = MIN(a, b);
+				int32_t hi = MAX(a, b);
+				if(hi > lo * 4 / 3){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.first = snd;
+					new_item.second = snd;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
 			/* A,S,Dからは、Fが一番速いはずだよね？ */
 			for(key_t pre = keyD; pre <= keyA; ++pre){
 				for(key_t snd = 0; snd < keyNumOfHand; ++snd){
