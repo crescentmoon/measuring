@@ -321,6 +321,27 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 					push_to_wanted_stack(&wanted_stack, new_item);
 				}
 			}
+			/* 中指連打より中指→人差し指のほうが速いよね？ */
+			for(key_t key = key3; key <= keyC; key += 6){
+				if(median(&items[handLeft][key][key - 1]) > median(&items[handLeft][key][key])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = key - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			for(key_t key = key8; key <= keyComma; key += 6){
+				if(median(&items[handRight][key - keyNumOfHand][key - 1 - keyNumOfHand]) > median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = key - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
 			/* A,S,Dからは、Fが一番速いはずだよね？ */
 			for(key_t pre = keyD; pre <= keyA; ++pre){
 				for(key_t snd = 0; snd < keyNumOfHand; ++snd){
