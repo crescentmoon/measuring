@@ -63,6 +63,16 @@ static int32_t median(key_record_t const *rec)
 	return result;
 }
 
+static key_record_t *ofLeft(key_record_t (*items)[handNum][keyNumOfHand][keyNumOfHand], key_t first, key_t second)
+{
+	return &((*items)[handLeft][first][second]);
+}
+
+static key_record_t *ofRight(key_record_t (*items)[handNum][keyNumOfHand][keyNumOfHand], key_t first, key_t second)
+{
+	return &((*items)[handRight][first - keyNumOfHand][second - keyNumOfHand]);
+}
+
 static bool is_filled(key_record_t (*items)[handNum][keyNumOfHand][keyNumOfHand])
 {
 	for(hand_t hand = 0; hand < handNum; ++hand){
@@ -86,6 +96,13 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 	}
 	wanted_stack->items[wanted_stack->count] = new_item;
 	++ wanted_stack->count;
+}
+
+static bool is_near_equal(int32_t a, int32_t b)
+{
+	int32_t lo = MIN(a, b);
+	int32_t hi = MAX(a, b);
+	return (hi <= lo * 4 / 3);
 }
 
 @implementation Data
@@ -226,9 +243,7 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 				key_t snd = key + 6;
 				int32_t a = median(&items[handLeft][key][key]);
 				int32_t b = median(&items[handLeft][snd][snd]);
-				int32_t lo = MIN(a, b);
-				int32_t hi = MAX(a, b);
-				if(hi > lo * 4 / 3){
+				if(! is_near_equal(a, b)){
 					key_pair_t new_item;
 					new_item.first = key;
 					new_item.second = key;
@@ -242,15 +257,35 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 				key_t snd = key + 6;
 				int32_t a = median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand]);
 				int32_t b = median(&items[handRight][snd - keyNumOfHand][snd - keyNumOfHand]);
-				int32_t lo = MIN(a, b);
-				int32_t hi = MAX(a, b);
-				if(hi > lo * 4 / 3){
+				if(! is_near_equal(a, b)){
 					key_pair_t new_item;
 					new_item.first = key;
 					new_item.second = key;
 					push_to_wanted_stack(&wanted_stack, new_item);
 					new_item.first = snd;
 					new_item.second = snd;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			/* 左右同形の箇所は余りにも違いすぎたらおかしいよね？(DSA→V, KL;→N) */
+			for(key_t leftFst = keyD; leftFst <= keyA; ++leftFst){
+				key_t rightFst = leftFst + keyNumOfHand;
+				if(! is_near_equal(median(ofLeft(&items, leftFst, keyV)), median(ofRight(&items, rightFst, keyN)))){
+					key_pair_t new_item;
+					new_item.first = leftFst;
+					new_item.second = keyV;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.first = rightFst;
+					new_item.second = keyN;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+				if(! is_near_equal(median(ofLeft(&items, keyV, leftFst)), median(ofRight(&items, keyN, rightFst)))){
+					key_pair_t new_item;
+					new_item.first = keyV;
+					new_item.second = leftFst;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.first = keyN;
+					new_item.second = rightFst;
 					push_to_wanted_stack(&wanted_stack, new_item);
 				}
 			}
