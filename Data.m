@@ -351,6 +351,27 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 				new_item.first = keyY;
 				push_to_wanted_stack(&wanted_stack, new_item);
 			}
+			/* 薬指連打より薬指→中指のほうが速いよね？ */
+			for(key_t key = key2; key <= keyX; key += 6){
+				if(median(&items[handLeft][key][key - 1]) > median(&items[handLeft][key][key])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = key - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			for(key_t key = key9; key <= keyPeriod; key += 6){
+				if(median(&items[handRight][key - keyNumOfHand][key - 1 - keyNumOfHand]) > median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = key - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
 		}
 		/* 少ないデータを求める */
 		if(wanted_stack.count == 0){
