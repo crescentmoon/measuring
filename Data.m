@@ -254,6 +254,73 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 					push_to_wanted_stack(&wanted_stack, new_item);
 				}
 			}
+			/* 連打のほうが同指異段より速いよね？(下) */
+			for(key_t key = 0; key < 18; ++key){
+				key_t snd = key + 6;
+				if(median(&items[handLeft][key][key]) >= median(&items[handLeft][key][snd])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = snd;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			for(key_t key = keyNumOfHand; key < keyNumOfHand + 18; ++key){
+				key_t snd = key + 6;
+				if(median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand]) >= median(&items[handRight][key - keyNumOfHand][snd - keyNumOfHand])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = snd;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			/* 連打のほうが同指異段より速いよね？(上) */
+			for(key_t key = 6; key < keyNumOfHand; ++key){
+				key_t snd = key - 6;
+				if(median(&items[handLeft][key][key]) >= median(&items[handLeft][key][snd])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = snd;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			for(key_t key = keyNumOfHand + 6; key < 2 * keyNumOfHand; ++key){
+				key_t snd = key - 6;
+				if(median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand]) >= median(&items[handRight][key - keyNumOfHand][snd - keyNumOfHand])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = snd;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			/* 薬指連打より薬指→中指のほうが速いよね？ */
+			for(key_t key = key2; key <= keyX; key += 6){
+				if(median(&items[handLeft][key][key - 1]) > median(&items[handLeft][key][key])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = key - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			for(key_t key = key9; key <= keyPeriod; key += 6){
+				if(median(&items[handRight][key - keyNumOfHand][key - 1 - keyNumOfHand]) > median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand])){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = key - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
 			/* A,S,Dからは、Fが一番速いはずだよね？ */
 			for(key_t pre = keyD; pre <= keyA; ++pre){
 				for(key_t snd = 0; snd < keyNumOfHand; ++snd){
@@ -350,27 +417,6 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 				push_to_wanted_stack(&wanted_stack, new_item);
 				new_item.first = keyY;
 				push_to_wanted_stack(&wanted_stack, new_item);
-			}
-			/* 薬指連打より薬指→中指のほうが速いよね？ */
-			for(key_t key = key2; key <= keyX; key += 6){
-				if(median(&items[handLeft][key][key - 1]) > median(&items[handLeft][key][key])){
-					key_pair_t new_item;
-					new_item.first = key;
-					new_item.second = key;
-					push_to_wanted_stack(&wanted_stack, new_item);
-					new_item.second = key - 1;
-					push_to_wanted_stack(&wanted_stack, new_item);
-				}
-			}
-			for(key_t key = key9; key <= keyPeriod; key += 6){
-				if(median(&items[handRight][key - keyNumOfHand][key - 1 - keyNumOfHand]) > median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand])){
-					key_pair_t new_item;
-					new_item.first = key;
-					new_item.second = key;
-					push_to_wanted_stack(&wanted_stack, new_item);
-					new_item.second = key - 1;
-					push_to_wanted_stack(&wanted_stack, new_item);
-				}
 			}
 		}
 		/* 少ないデータを求める */
