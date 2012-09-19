@@ -422,6 +422,23 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 				new_item.first = keyG;
 				push_to_wanted_stack(&wanted_stack, new_item);
 			}
+			/* Q→F < Q→D < Q→A (願望) */
+			if(median(&items[handLeft][keyQ][keyF]) > median(&items[handLeft][keyQ][keyD])){
+				key_pair_t new_item;
+				new_item.first = keyQ;
+				new_item.second = keyF;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.second = keyD;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
+			if(median(&items[handLeft][keyQ][keyD]) > median(&items[handLeft][keyQ][keyA])){
+				key_pair_t new_item;
+				new_item.first = keyQ;
+				new_item.second = keyD;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.second = keyA;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
 			/* I→P < U→P < Y→P (願望) */
 			if(median(&items[handRight][keyI - keyNumOfHand][keyP - keyNumOfHand]) > median(&items[handRight][keyU - keyNumOfHand][keyP - keyNumOfHand])){
 				key_pair_t new_item;
@@ -437,6 +454,23 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 				new_item.second = keyP;
 				push_to_wanted_stack(&wanted_stack, new_item);
 				new_item.first = keyY;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
+			/* P→J < P→K < P→; (願望) */
+			if(median(&items[handRight][keyP - keyNumOfHand][keyJ - keyNumOfHand]) > median(&items[handRight][keyP - keyNumOfHand][keyK - keyNumOfHand])){
+				key_pair_t new_item;
+				new_item.first = keyP;
+				new_item.second = keyJ;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.second = keyK;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
+			if(median(&items[handRight][keyP - keyNumOfHand][keyK - keyNumOfHand]) > median(&items[handRight][keyP - keyNumOfHand][keySemicolon - keyNumOfHand])){
+				key_pair_t new_item;
+				new_item.first = keyP;
+				new_item.second = keyK;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.second = keySemicolon;
 				push_to_wanted_stack(&wanted_stack, new_item);
 			}
 		}
