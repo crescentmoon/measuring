@@ -432,6 +432,31 @@ static bool is_near_equal(int32_t a, int32_t b)
 					}
 				}
 			}
+			/* ;は'より速くあって欲しい…(願望) */
+			for(key_t pre = keyNumOfHand; pre < 2 * keyNumOfHand; ++pre){
+				if(pre % 6 < 4){ /* 小指以外 */
+					if(median(ofRight(&items, pre, keySemicolon)) > median(ofRight(&items, pre, keyApostrophe))){
+						key_pair_t new_item;
+						new_item.first = pre;
+						new_item.second = keySemicolon;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.second = keyApostrophe;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
+			for(key_t snd = keyNumOfHand; snd < 2 * keyNumOfHand; ++snd){
+				if(snd % 6 < 4){ /* 小指以外 */
+					if(median(ofRight(&items, keySemicolon, snd)) > median(ofRight(&items, keyApostrophe, snd))){
+						key_pair_t new_item;
+						new_item.first = keySemicolon;
+						new_item.second = snd;
+						push_to_wanted_stack(&wanted_stack, new_item);
+						new_item.first = keyApostrophe;
+						push_to_wanted_stack(&wanted_stack, new_item);
+					}
+				}
+			}
 			/* E→Q < R→Q < T→Q < G→Q (願望) */
 			if(median(&items[handLeft][keyE][keyQ]) > median(&items[handLeft][keyR][keyQ])){
 				key_pair_t new_item;

@@ -56,7 +56,7 @@ enum {
 	keyK = keyNumOfHand + 14,
 	keyL = keyNumOfHand + 15,
 	keySemicolon = keyNumOfHand + 16,
-	keyQuote = keyNumOfHand + 17,
+	keyApostrophe = keyNumOfHand + 17,
 	keyN = keyNumOfHand + 18,
 	keyM = keyNumOfHand + 19,
 	keyComma = keyNumOfHand + 20,
