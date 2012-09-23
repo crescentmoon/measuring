@@ -267,6 +267,31 @@ static bool is_near_equal(int32_t a, int32_t b)
 					push_to_wanted_stack(&wanted_stack, new_item);
 				}
 			}
+			/* 同じ指によるアルペジオが余りにも違いすぎたらおかしいよね？ */
+			for(key_t key = key3; key <= keyD; key += 6){
+				key_t bottom = key + 6;
+				if(! is_near_equal(median(ofLeft(&items, key, key - 1)), median(ofLeft(&items, bottom, bottom - 1)))){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = bottom;
+					new_item.second = bottom - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
+			for(key_t key = key8; key <= keyK; key += 6){
+				key_t bottom = key + 6;
+				if(! is_near_equal(median(ofRight(&items, key, key - 1)), median(ofRight(&items, bottom, bottom - 1)))){
+					key_pair_t new_item;
+					new_item.first = key;
+					new_item.second = key - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+					new_item.second = bottom;
+					new_item.second = bottom - 1;
+					push_to_wanted_stack(&wanted_stack, new_item);
+				}
+			}
 			/* 左右同形の箇所は余りにも違いすぎたらおかしいよね？(DSA→V, KL;→N) */
 			for(key_t leftFst = keyD; leftFst <= keyA; ++leftFst){
 				key_t rightFst = leftFst + keyNumOfHand;
