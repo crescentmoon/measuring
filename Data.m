@@ -379,8 +379,8 @@ static bool is_near_equal(int32_t a, int32_t b)
 					push_to_wanted_stack(&wanted_stack, new_item);
 				}
 			}
-			/* 左右同形の箇所は余りにも違いすぎたらおかしいよね？(DSA→V, KL;→N) */
-			for(key_t leftFst = keyD; leftFst <= keyA; ++leftFst){
+			/* 左右同形の箇所は余りにも違いすぎたらおかしいよね？(DSAFG→V, HJKL;→N) */
+			for(key_t leftFst = keyG; leftFst <= keyA; ++leftFst){
 				key_t rightFst = leftFst + keyNumOfHand;
 				if(! is_near_equal(median(ofLeft(&items, leftFst, keyV)), median(ofRight(&items, rightFst, keyN)))){
 					key_pair_t new_item;
