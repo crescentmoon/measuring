@@ -738,6 +738,24 @@ static bool is_near_equal(int32_t a, int32_t b)
 				new_item.second = keyT;
 				push_to_wanted_stack(&wanted_stack, new_item);
 			}
+			/* R→ZとR→Qは近い (願望, R→A < R→Zは段差チェックに含まれる) */
+			if(! is_near_equal(median(ofLeft(&items, keyR, keyZ)), median(ofLeft(&items, keyR, keyQ)))){
+				key_pair_t new_item;
+				new_item.first = keyR;
+				new_item.second = keyZ;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.second = keyQ;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
+			/* T→ZとT→Qは近い (願望, T→A < T→Zは段差チェックに含まれる) */
+			if(! is_near_equal(median(ofLeft(&items, keyT, keyZ)), median(ofLeft(&items, keyT, keyQ)))){
+				key_pair_t new_item;
+				new_item.first = keyT;
+				new_item.second = keyZ;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.second = keyQ;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
 			/* I→P < U→P < Y→P (願望) */
 			if(median(&items[handRight][keyI - keyNumOfHand][keyP - keyNumOfHand]) > median(&items[handRight][keyU - keyNumOfHand][keyP - keyNumOfHand])){
 				key_pair_t new_item;
