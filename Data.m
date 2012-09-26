@@ -454,7 +454,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 					if(key % 6 >= 2 && key % 6 <= 4){ /* 中指薬指小指 */
 						key_t snd_2 = snd_1 - 1;
 						if(median(ofLeft(&items, key, snd_1)) <= median(ofLeft(&items, key, snd_2))
-							&& !((key == keyQ || key == key1) && snd_1 == keyZ)) /* 例外 */
+							&& !((key == keyA || key == keyQ || key == key1) && snd_1 == keyZ)) /* 例外 */
 						{
 							key_pair_t new_item;
 							new_item.first = key;
@@ -736,6 +736,15 @@ static bool is_near_equal(int32_t a, int32_t b)
 				new_item.second = keyG;
 				push_to_wanted_stack(&wanted_stack, new_item);
 				new_item.second = keyT;
+				push_to_wanted_stack(&wanted_stack, new_item);
+			}
+			/* S→Z < S→Q (願望) */
+			if(median(ofLeft(&items, keyS, keyZ)) >= median(ofLeft(&items, keyS, keyQ))){
+				key_pair_t new_item;
+				new_item.first = keyS;
+				new_item.second = keyZ;
+				push_to_wanted_stack(&wanted_stack, new_item);
+				new_item.second = keyQ;
 				push_to_wanted_stack(&wanted_stack, new_item);
 			}
 			/* R→ZとR→Qは近い (願望, R→A < R→Zは段差チェックに含まれる) */
