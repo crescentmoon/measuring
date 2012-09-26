@@ -94,6 +94,7 @@ static void push_to_wanted_stack(wanted_stack_t *wanted_stack, key_pair_t new_it
 			return; /* 既に追加済み */
 		}
 	}
+	NSLog(@"%c,%c", charOfKey(new_item.first), charOfKey(new_item.second));
 	wanted_stack->items[wanted_stack->count] = new_item;
 	++ wanted_stack->count;
 }
@@ -183,7 +184,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 				for(key_t snd_1 = (pre / 6) * 6 + 6; snd_1 < keyNumOfHand - 6; ++snd_1){
 					key_t snd_2 = snd_1 + 6;
 					NSAssert(snd_2 < keyNumOfHand, @"bad snd_2");
-					if(median(&items[handLeft][pre][snd_1]) > median(&items[handLeft][pre][snd_2])){
+					if(median(&items[handLeft][pre][snd_1]) >= median(&items[handLeft][pre][snd_2])){
 						key_pair_t new_item;
 						new_item.first = pre;
 						new_item.second = snd_1;
@@ -198,7 +199,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 				for(key_t snd_1 = (pre / 6) * 6 + 6; snd_1 < 2 * keyNumOfHand - 6; ++snd_1){
 					key_t snd_2 = snd_1 + 6;
 					NSAssert(snd_2 < 2 * keyNumOfHand, @"bad snd_2");
-					if(median(&items[handRight][pre - keyNumOfHand][snd_1 - keyNumOfHand]) > median(&items[handRight][pre - keyNumOfHand][snd_2 - keyNumOfHand])){
+					if(median(&items[handRight][pre - keyNumOfHand][snd_1 - keyNumOfHand]) >= median(&items[handRight][pre - keyNumOfHand][snd_2 - keyNumOfHand])){
 						key_pair_t new_item;
 						new_item.first = pre;
 						new_item.second = snd_1;
@@ -213,7 +214,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 				for(key_t snd_1 = 6; snd_1 < (pre / 6) * 6; ++snd_1){
 					key_t snd_2 = snd_1 - 6;
 					NSAssert(snd_2 >= 0, @"bad snd_2");
-					if(median(&items[handLeft][pre][snd_1]) > median(&items[handLeft][pre][snd_2])){
+					if(median(&items[handLeft][pre][snd_1]) >= median(&items[handLeft][pre][snd_2])){
 						key_pair_t new_item;
 						new_item.first = pre;
 						new_item.second = snd_1;
@@ -225,10 +226,10 @@ static bool is_near_equal(int32_t a, int32_t b)
 			}
 			/* 跳躍が一段差よりも速かったらおかしいよね？(右手下から上2) */
 			for(key_t pre = 12 + keyNumOfHand; pre < 2 * keyNumOfHand; ++pre){
-				for(key_t snd_1 = 6 + keyNumOfHand; snd_1 < (pre / 6) * 6; ++snd_1){
+				for(key_t snd_1 = 6 + keyNumOfHand; snd_1 <= (pre / 6) * 6; ++snd_1){
 					key_t snd_2 = snd_1 - 6;
 					NSAssert(snd_2 >= keyNumOfHand, @"bad snd_2");
-					if(median(&items[handRight][pre - keyNumOfHand][snd_1 - keyNumOfHand]) > median(&items[handRight][pre - keyNumOfHand][snd_2 - keyNumOfHand])){
+					if(median(&items[handRight][pre - keyNumOfHand][snd_1 - keyNumOfHand]) >= median(&items[handRight][pre - keyNumOfHand][snd_2 - keyNumOfHand])){
 						key_pair_t new_item;
 						new_item.first = pre;
 						new_item.second = snd_1;
@@ -243,7 +244,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 				key_t pre_2 = pre_1 + 6;
 				for(key_t snd = (pre_2 / 6) * 6 + 6; snd < keyNumOfHand; ++snd){
 					NSAssert(snd < keyNumOfHand, @"bad snd");
-					if(median(ofLeft(&items, pre_1, snd)) < median(ofLeft(&items, pre_2, snd))){
+					if(median(ofLeft(&items, pre_1, snd)) <= median(ofLeft(&items, pre_2, snd))){
 						key_pair_t new_item;
 						new_item.first = pre_1;
 						new_item.second = snd;
@@ -258,7 +259,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 				key_t pre_2 = pre_1 + 6;
 				for(key_t snd = (pre_2 / 6) * 6 + 6; snd < 2 * keyNumOfHand; ++snd){
 					NSAssert(snd < 2 * keyNumOfHand, @"bad snd");
-					if(median(ofRight(&items, pre_1, snd)) < median(ofRight(&items, pre_2, snd))){
+					if(median(ofRight(&items, pre_1, snd)) <= median(ofRight(&items, pre_2, snd))){
 						key_pair_t new_item;
 						new_item.first = pre_1;
 						new_item.second = snd;
@@ -272,7 +273,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 			for(key_t pre_1 = 12; pre_1 < keyNumOfHand; ++pre_1){
 				key_t pre_2 = pre_1 - 6;
 				for(key_t snd = 0; snd < (pre_2 / 6) * 6; ++snd){
-					if(median(ofLeft(&items, pre_1, snd)) < median(ofLeft(&items, pre_2, snd))){
+					if(median(ofLeft(&items, pre_1, snd)) <= median(ofLeft(&items, pre_2, snd))){
 						key_pair_t new_item;
 						new_item.first = pre_1;
 						new_item.second = snd;
@@ -286,7 +287,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 			for(key_t pre_1 = keyNumOfHand + 12; pre_1 < 2 * keyNumOfHand; ++pre_1){
 				key_t pre_2 = pre_1 - 6;
 				for(key_t snd = keyNumOfHand; snd < (pre_2 / 6) * 6; ++snd){
-					if(median(ofRight(&items, pre_1, snd)) < median(ofRight(&items, pre_2, snd))){
+					if(median(ofRight(&items, pre_1, snd)) <= median(ofRight(&items, pre_2, snd))){
 						key_pair_t new_item;
 						new_item.first = pre_1;
 						new_item.second = snd;
@@ -447,9 +448,126 @@ static bool is_near_equal(int32_t a, int32_t b)
 					push_to_wanted_stack(&wanted_stack, new_item);
 				}
 			}
+			/* 同指異段が隣の指より速かったらおかしいよね？(下) */
+			for(key_t key = 0; key < 18; ++key){
+				for(key_t snd_1 = key + 6; snd_1 < keyNumOfHand; snd_1 += 6){
+					if(key % 6 >= 2 && key % 6 <= 4){ /* 中指薬指小指 */
+						key_t snd_2 = snd_1 - 1;
+						if(median(ofLeft(&items, key, snd_1)) <= median(ofLeft(&items, key, snd_2))
+							&& !((key == keyQ || key == key1) && snd_1 == keyZ)) /* 例外 */
+						{
+							key_pair_t new_item;
+							new_item.first = key;
+							new_item.second = snd_1;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd_2;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+					if(key % 6 >= 1 && key % 6 <= 3){ /* 人差し指中指薬指 */
+						key_t snd_2 = snd_1 + 1;
+						if(median(ofLeft(&items, key, snd_1)) <= median(ofLeft(&items, key, snd_2))){
+							key_pair_t new_item;
+							new_item.first = key;
+							new_item.second = snd_1;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd_2;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+				}
+			}
+			for(key_t key = keyNumOfHand; key < keyNumOfHand + 18; ++key){
+				for(key_t snd_1 = key + 6; snd_1 < 2 * keyNumOfHand; snd_1 += 6){
+					if(key % 6 >= 2 && key % 6 <= 4){ /* 中指薬指小指 */
+						key_t snd_2 = snd_1 - 1;
+						if(median(ofRight(&items, key, snd_1)) <= median(ofRight(&items, key, snd_2))
+							&& !((key == key0 || key == keyP) && snd_1 == keySlash)) /* 例外 */
+						{
+							key_pair_t new_item;
+							new_item.first = key;
+							new_item.second = snd_1;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd_2;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+					if(key % 6 >= 1 && key % 6 <= 3){ /* 人差し指中指薬指 */
+						key_t snd_2 = snd_1 + 1;
+						if(median(ofRight(&items, key, snd_1)) <= median(ofRight(&items, key, snd_2))
+							&& !(key == keyJ && snd_1 == keyM)) /* 例外 */
+						{
+							key_pair_t new_item;
+							new_item.first = key;
+							new_item.second = snd_1;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd_2;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+				}
+			}
+			/* 同指異段が隣の指より速かったらおかしいよね？(上) */
+			for(key_t key = 6; key < keyNumOfHand; ++key){
+				for(key_t snd_1 = key % 6; snd_1 < key; snd_1 += 6){
+					if(key % 6 >= 2 && key % 6 <= 4){ /* 中指薬指小指 */
+						key_t snd_2 = snd_1 - 1;
+						if(median(ofLeft(&items, key, snd_1)) <= median(ofLeft(&items, key, snd_2))){
+							key_pair_t new_item;
+							new_item.first = key;
+							new_item.second = snd_1;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd_2;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+					if(key % 6 >= 1 && key % 6 <= 3){ /* 人差し指中指薬指 */
+						key_t snd_2 = snd_1 + 1;
+						if(median(ofLeft(&items, key, snd_1)) <= median(ofLeft(&items, key, snd_2))
+							&& !((key == keyX || key == keyS) && (snd_1 == keyW || snd_1 == key2))
+							&& !(key == keyC && (snd_1 == keyE || snd_1 == key3))) /* 例外 */
+						{
+							key_pair_t new_item;
+							new_item.first = key;
+							new_item.second = snd_1;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd_2;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+				}
+			}
+			for(key_t key = keyNumOfHand; key < 2 * keyNumOfHand; ++key){
+				for(key_t snd_1 = keyNumOfHand + key % 6; snd_1 < key; snd_1 += 6){
+					if(key % 6 >= 2 && key % 6 <= 4){ /* 中指薬指小指 */
+						key_t snd_2 = snd_1 - 1;
+						if(median(ofRight(&items, key, snd_1)) <= median(ofRight(&items, key, snd_2))
+							&& !((key == keyI || key == keyK || key == keyComma) && snd_1 == key8))
+						{
+							key_pair_t new_item;
+							new_item.first = key;
+							new_item.second = snd_1;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd_2;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+					if(key % 6 >= 1 && key % 6 <= 3){ /* 人差し指中指薬指 */
+						key_t snd_2 = snd_1 + 1;
+						if(median(ofRight(&items, key, snd_1)) <= median(ofRight(&items, key, snd_2))){
+							key_pair_t new_item;
+							new_item.first = key;
+							new_item.second = snd_1;
+							push_to_wanted_stack(&wanted_stack, new_item);
+							new_item.second = snd_2;
+							push_to_wanted_stack(&wanted_stack, new_item);
+						}
+					}
+				}
+			}
 			/* 薬指連打より薬指→中指のほうが速いよね？ */
 			for(key_t key = key2; key <= keyX; key += 6){
-				if(median(&items[handLeft][key][key - 1]) > median(&items[handLeft][key][key])){
+				if(median(&items[handLeft][key][key - 1]) >= median(&items[handLeft][key][key])){
 					key_pair_t new_item;
 					new_item.first = key;
 					new_item.second = key;
@@ -459,7 +577,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 				}
 			}
 			for(key_t key = key9; key <= keyPeriod; key += 6){
-				if(median(&items[handRight][key - keyNumOfHand][key - 1 - keyNumOfHand]) > median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand])){
+				if(median(&items[handRight][key - keyNumOfHand][key - 1 - keyNumOfHand]) >= median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand])){
 					key_pair_t new_item;
 					new_item.first = key;
 					new_item.second = key;
@@ -470,7 +588,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 			}
 			/* 中指連打より中指→人差し指のほうが速いよね？ */
 			for(key_t key = key3; key <= keyC; key += 6){
-				if(median(&items[handLeft][key][key - 1]) > median(&items[handLeft][key][key])){
+				if(median(&items[handLeft][key][key - 1]) >= median(&items[handLeft][key][key])){
 					key_pair_t new_item;
 					new_item.first = key;
 					new_item.second = key;
@@ -480,7 +598,7 @@ static bool is_near_equal(int32_t a, int32_t b)
 				}
 			}
 			for(key_t key = key8; key <= keyComma; key += 6){
-				if(median(&items[handRight][key - keyNumOfHand][key - 1 - keyNumOfHand]) > median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand])){
+				if(median(&items[handRight][key - keyNumOfHand][key - 1 - keyNumOfHand]) >= median(&items[handRight][key - keyNumOfHand][key - keyNumOfHand])){
 					key_pair_t new_item;
 					new_item.first = key;
 					new_item.second = key;
