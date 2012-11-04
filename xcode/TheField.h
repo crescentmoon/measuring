@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Data.h"
+#import "DataObject.h"
 #import "DataSource.h"
 
 @interface TheField : NSView {

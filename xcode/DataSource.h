@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Data.h"
+#import "DataObject.h"
 
 
 @interface DataSource : NSObject<NSTableViewDataSource> {

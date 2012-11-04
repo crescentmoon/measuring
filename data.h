@@ -1,12 +1,14 @@
 //
-//  Data.h
+//  data.h
 //  measuring
 //
 //  Created by crescentmoon on 12/09/07.
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#include <stdbool.h>
+#include <stdint.h>
+
 
 typedef enum { handLeft, handRight, handNum } hand_t;
 
@@ -88,18 +90,18 @@ typedef struct {
 	int count;
 } wanted_stack_t;
 
-@interface Data : NSObject {
+typedef struct {
 	key_record_t items[handNum][keyNumOfHand][keyNumOfHand];
 	wanted_stack_t wanted_stack;
 	key_pair_t current_wanted;
-}
+} data_t;
 
-- (key_pair_t)wanted;
-- (void)add:(key_pair_t)seq mesc:(int32_t)msec;
+extern void init_data(data_t *data);
 
-- (int32_t)msecOf:(key_pair_t)seq;
+extern key_pair_t wanted(data_t const *data);
+extern void add(data_t *data, key_pair_t seq, int32_t msec);
 
-- (BOOL)saveToFile:(NSURL *)filename;
-- (BOOL)loadFromFile:(NSURL *)filename;
+extern int32_t msecOf(data_t const *data, key_pair_t seq);
 
-@end
+extern bool saveToFile(data_t *data, char const *filename);
+extern bool loadFromFile(data_t *data, char const *filename);
