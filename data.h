@@ -6,11 +6,13 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stdint.h>
 
 
-typedef enum { handLeft, handRight, handNum } hand_t;
+typedef enum hand { handLeft, handRight, handNum } hand_t;
 
 enum { keyNumOfHand = 24 };
 
@@ -90,7 +92,7 @@ typedef struct {
 	int count;
 } wanted_stack_t;
 
-typedef struct {
+typedef struct data {
 	key_record_t items[handNum][keyNumOfHand][keyNumOfHand];
 	wanted_stack_t wanted_stack;
 	key_pair_t current_wanted;

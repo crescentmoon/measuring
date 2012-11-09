@@ -96,7 +96,7 @@ static key_record_t *ofRight(key_record_t (*items)[handNum][keyNumOfHand][keyNum
 
 static bool is_filled(key_record_t (*items)[handNum][keyNumOfHand][keyNumOfHand])
 {
-	for(hand_t hand = 0; hand < handNum; ++hand){
+	for(int hand = 0; hand < handNum; ++hand){
 		for(int i = 0; i < keyNumOfHand; ++i){
 			for(int j = 0; j < keyNumOfHand; ++j){
 				if((*items)[hand][i][j].count == 0){
@@ -137,7 +137,7 @@ static void updateWanted(data_t *data)
 		/* 全てのデータが埋まっている場合のみ、不自然データのチェック */
 		if(filled){
 			/* 1000msを超えていたらいくらなんでもおかしいと思う */
-			for(hand_t hand = 0; hand < handNum; ++hand){
+			for(int hand = 0; hand < handNum; ++hand){
 				for(int i = 0; i < keyNumOfHand; ++i){
 					for(int j = 0; j < keyNumOfHand; ++j){
 						if(median(&data->items[hand][i][j]) >= 1000){
@@ -823,7 +823,7 @@ static void updateWanted(data_t *data)
 		/* 少ないデータを求める */
 		if(data->wanted_stack.count == 0){
 			int n = INT_MAX;
-			for(hand_t hand = 0; hand < handNum; ++hand){
+			for(int hand = 0; hand < handNum; ++hand){
 				for(int i = 0; i < keyNumOfHand; ++i){
 					for(int j = 0; j < keyNumOfHand; ++j){
 						key_t first = (hand == handLeft) ? i : i + keyNumOfHand;
@@ -862,7 +862,7 @@ static void updateWanted(data_t *data)
 
 void init_data(data_t *data)
 {
-	for(hand_t hand = 0; hand < handNum; ++hand){
+	for(int hand = 0; hand < handNum; ++hand){
 		for(int i = 0; i < keyNumOfHand; ++i){
 			for(int j = 0; j < keyNumOfHand; ++j){
 				data->items[hand][i][j].count = 0;
@@ -886,16 +886,16 @@ void add(data_t *data, key_pair_t seq, int32_t msec)
 		int secondIndex = (hand == handLeft) ? seq.second : seq.second - keyNumOfHand;
 		key_record_t *rec = &data->items[hand][firstIndex][secondIndex];
 		if(rec->count >= recordNum){
-			//最低値と最大値を取り除く
+			/* 最低値と最大値を取り除く */
 			for(int i = 1; i < rec->count - 1; ++i){
 				rec->msec[i - 1] = rec->msec[i];
 			}
 			rec->count -= 2;
 		}
-		//追加
+		/*追加 */
 		insert(rec->msec, rec->count, msec);
 		++ rec->count;
-		//次を準備
+		/* 次を準備 */
 		updateWanted(data);
 	}
 }
@@ -918,7 +918,7 @@ bool saveToFile(data_t *data, char const *filename)
 	bool result = false;
 	FILE *file = fopen(filename, "wb");
 	if(file){
-		for(hand_t hand = 0; hand < handNum; ++hand){
+		for(int hand = 0; hand < handNum; ++hand){
 			for(int i = 0; i < keyNumOfHand; ++i){
 				for(int j = 0; j < keyNumOfHand; ++j){
 					key_record_t *rec = &data->items[hand][i][j];
@@ -943,7 +943,7 @@ bool loadFromFile(data_t *data, char const *filename)
 	bool result = false;
 	FILE *file = fopen(filename, "rb");
 	if(file){
-		for(hand_t hand = 0; hand < handNum; ++hand){
+		for(int hand = 0; hand < handNum; ++hand){
 			for(int i = 0; i < keyNumOfHand; ++i){
 				for(int j = 0; j < keyNumOfHand; ++j){
 					key_record_t *rec = &data->items[hand][i][j];
@@ -963,7 +963,7 @@ bool loadFromFile(data_t *data, char const *filename)
 	error:
 		if(fclose(file) < 0) result = false;
 	}
-	//問題差し替え
+	/* 問題差し替え */
 	if(result){
 		data->wanted_stack.count = 0;
 		updateWanted(data);
