@@ -16,6 +16,7 @@
 	data_t instance;
 }
 
+- (bool)is_fixing_mode;
 - (key_pair_t)wanted;
 - (void)add:(key_pair_t)seq mesc:(int32_t)msec;
 

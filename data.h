@@ -95,11 +95,13 @@ typedef struct {
 typedef struct data {
 	key_record_t items[handNum][keyNumOfHand][keyNumOfHand];
 	wanted_stack_t wanted_stack;
+	bool fixing_mode;
 	key_pair_t current_wanted;
 } data_t;
 
 extern void init_data(data_t *data);
 
+extern bool is_fixing_mode(data_t const *data);
 extern key_pair_t wanted(data_t const *data);
 extern void add(data_t *data, key_pair_t seq, int32_t msec);
 

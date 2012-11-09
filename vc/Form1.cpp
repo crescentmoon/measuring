@@ -228,6 +228,12 @@ namespace measuring {
 		key_pair_t pair = ::wanted(data);
 		System::String ^s = longFormOf2(charOfKey(pair.first), charOfKey(pair.second));
 		guideLabel->Text = s;
+		/* 修正モードをとりあえず色で表示 */
+		if(::is_fixing_mode(data)){
+			inputTextBox->BackColor = System::Drawing::Color::LightPink;
+		}else{
+			inputTextBox->BackColor = System::Drawing::Color::Azure;
+		}
 	}
 
 	void Form1::loadFromFile(System::String ^newFileName)

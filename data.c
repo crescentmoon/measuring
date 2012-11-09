@@ -821,6 +821,7 @@ static void updateWanted(data_t *data)
 			}
 		}
 		/* 少ないデータを求める */
+		data->fixing_mode = data->wanted_stack.count > 0;
 		if(data->wanted_stack.count == 0){
 			int n = INT_MAX;
 			for(int hand = 0; hand < handNum; ++hand){
@@ -871,6 +872,11 @@ void init_data(data_t *data)
 	}
 	data->wanted_stack.count = 0;
 	updateWanted(data);
+}
+
+bool is_fixing_mode(data_t const *data)
+{
+	return data->fixing_mode;
 }
 
 key_pair_t wanted(data_t const *data)

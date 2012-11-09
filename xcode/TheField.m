@@ -101,7 +101,11 @@ static NSString *longFormOf2 (char c1, char c2)
 
 	NSRect bounds = [self bounds];
 	
-	[[NSColor whiteColor] set];
+	if ([data is_fixing_mode]){
+		[[NSColor colorWithCalibratedRed:1.0 green:0.8 blue:0.8 alpha:1.0] set];
+	}else{
+		[[NSColor whiteColor] set];
+	}
 	[NSBezierPath fillRect:bounds];
 	
 	[[NSColor blackColor] set];

@@ -18,6 +18,11 @@
 	return self;
 }
 
+- (bool)is_fixing_mode
+{
+	return is_fixing_mode(&instance);
+}
+
 - (key_pair_t)wanted
 {
 	return wanted(&instance);
