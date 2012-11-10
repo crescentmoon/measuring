@@ -212,11 +212,12 @@ namespace measuring {
 
 	void Form1::InitializeData()
 	{
+		stopWatch = gcnew System::Diagnostics::Stopwatch;
+
 		data = new data_t;
 		::init_data(data);
 
 		inputed = L"";
-		firstTime = nullptr;
 
 		fileName = nullptr;
 
@@ -340,17 +341,14 @@ namespace measuring {
 		key_t key = keyOfKeyCode(code);
 		if(key >= 0){
 			key_pair_t wanted = ::wanted(data);
-			if(firstTime != nullptr && key == wanted.second){
+			if(stopWatch->IsRunning && key == wanted.second){
 				/* 時間 */
-				System::DateTime ^secondTime = System::DateTime::Now;
-				System::TimeSpan ^interval = *secondTime - *firstTime;
-				int32_t msec = interval->Milliseconds;
+				stopWatch->Stop();
+				int32_t msec = static_cast<int32_t>(stopWatch->ElapsedMilliseconds);
 				/* データ追加 */
 				::add(data, wanted, msec);
 				/* 完成 */
 				inputed = longFormOf2(layout, charOfKey(wanted.first), charOfKey(wanted.second));
-				/* 時間クリア */
-				firstTime = nullptr;
 				/* 次の問題 */
 				ReadyMeasuring();
 				/* 再描画 */
@@ -365,14 +363,15 @@ namespace measuring {
 				/* 入力文字 */
 				inputed = longFormOf(layout, charOfKey(key));
 				/* 時間 */
-				firstTime = System::DateTime::Now;
+				stopWatch->Reset();
+				stopWatch->Start();
 				/* 再描画 */
 				inputTextBox->Text = inputed;
 				inputTextBox->SelectionStart = inputed->Length;
 			}else{
 				/* キャンセル */
 				inputed = L"";
-				firstTime = nullptr;
+				stopWatch->Stop();
 				/* 再描画 */
 				inputTextBox->Text = inputed;
 			}

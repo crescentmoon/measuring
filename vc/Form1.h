@@ -48,9 +48,9 @@ namespace measuring {
 		}
 
 	private:
+		System::Diagnostics::Stopwatch ^stopWatch;
 		struct data *data;
 		System::String^ inputed;
-		System::DateTime^ firstTime;
 		System::String^ fileName;
 		layout_t layout;
 
