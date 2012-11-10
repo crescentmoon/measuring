@@ -6,11 +6,13 @@
 #include "msclr/marshal_cppstd.h"
 #include "data.h"
 
-static System::String ^longFormOf (char c)
+static System::String ^longFormOf (layout_t layout, char c)
 {
 	System::String ^result;
 	char s[2];
-	switch(c){
+	switch(layout){
+	case layoutUS104:
+		switch(c){
 		case 't':
 			result = L"<tab>";
 			break;
@@ -27,14 +29,45 @@ static System::String ^longFormOf (char c)
 			s[0] = c;
 			s[1] = '\0';
 			result = gcnew System::String(s);
+		}
+		break;
+	case layoutJapan106:
+		switch(c){
+		case '`':
+			result = L"<full width>";
+			break;
+		case 't':
+			result = L"<tab>";
+			break;
+		case 'c':
+			result = L"<caps lock>";
+			break;
+		case 'l':
+			result = L"<left shift>";
+			break;
+		case '[':
+			result = L"@";
+			break;
+		case '\'':
+			result = L":";
+			break;
+		case 'r':
+			result = L"_";
+			break;
+		default:
+			s[0] = c;
+			s[1] = '\0';
+			result = gcnew System::String(s);
+		}
+		break;
 	}
 	return result;
 }
 
-static System::String ^longFormOf2 (char c1, char c2)
+static System::String ^longFormOf2 (layout_t layout, char c1, char c2)
 {
-	System::String ^s1 = longFormOf(c1);
-	System::String ^s2 = longFormOf(c2);
+	System::String ^s1 = longFormOf(layout, c1);
+	System::String ^s2 = longFormOf(layout, c2);
 	System::String ^result;
 	if(islower(c1) || islower(c2)){
 		result = s1 + L" " + s2;
@@ -155,6 +188,26 @@ static key_t keyOfKeyCode(System::Windows::Forms::Keys code)
 	}
 }
 
+static System::Windows::Forms::Keys us104OfJapan106(System::Windows::Forms::KeyEventArgs^  e)
+{
+	switch(e->KeyValue){
+	case 242: case 243:
+		return System::Windows::Forms::Keys::Oemtilde; /* 全半角 → ` */
+	case 240:
+		return System::Windows::Forms::Keys::Capital; /* 英数 → CapsLock */
+	case 192:
+		return System::Windows::Forms::Keys::OemOpenBrackets; /* @ → [ */
+	case 187:
+		return System::Windows::Forms::Keys::OemSemicolon; /* + → ; */
+	case 186:
+		return System::Windows::Forms::Keys::OemQuotes; /* : → ' */
+	case 226:
+		return System::Windows::Forms::Keys::RShiftKey; /* _ → 右Shift */
+	default:
+		return e->KeyCode;
+	}
+}
+
 namespace measuring {
 
 	void Form1::InitializeData()
@@ -166,6 +219,8 @@ namespace measuring {
 		firstTime = nullptr;
 
 		fileName = nullptr;
+
+		layout = layoutUS104;
 	}
 
 	void Form1::FinalizeData()
@@ -226,7 +281,7 @@ namespace measuring {
 	{
 		/* 測定の準備をする */
 		key_pair_t pair = ::wanted(data);
-		System::String ^s = longFormOf2(charOfKey(pair.first), charOfKey(pair.second));
+		System::String ^s = longFormOf2(layout, charOfKey(pair.first), charOfKey(pair.second));
 		guideLabel->Text = s;
 		/* 修正モードをとりあえず色で表示 */
 		if(::is_fixing_mode(data)){
@@ -278,6 +333,9 @@ namespace measuring {
 		System::Windows::Forms::Keys code = e->KeyCode;
 		if(code == System::Windows::Forms::Keys::ShiftKey){
 			code = LeftOrRightShiftKey();
+		}else if(layout == layoutJapan106){
+			/* 日本語キーボードを英語キーボードにマッピング */
+			code = us104OfJapan106(e);
 		}
 		key_t key = keyOfKeyCode(code);
 		if(key >= 0){
@@ -290,7 +348,7 @@ namespace measuring {
 				/* データ追加 */
 				::add(data, wanted, msec);
 				/* 完成 */
-				inputed = longFormOf2(charOfKey(wanted.first), charOfKey(wanted.second));
+				inputed = longFormOf2(layout, charOfKey(wanted.first), charOfKey(wanted.second));
 				/* 時間クリア */
 				firstTime = nullptr;
 				/* 次の問題 */
@@ -305,7 +363,7 @@ namespace measuring {
 				}
 			}else if(key == wanted.first){
 				/* 入力文字 */
-				inputed = longFormOf(charOfKey(key));
+				inputed = longFormOf(layout, charOfKey(key));
 				/* 時間 */
 				firstTime = System::DateTime::Now;
 				/* 再描画 */
@@ -355,6 +413,22 @@ namespace measuring {
 		if(result == System::Windows::Forms::DialogResult::OK){
 			saveToFile(saveFileDialog->FileName);
 		}
+	}
+
+	System::Void Form1::us104ToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
+	{
+		layout = layoutUS104;
+		us104ToolStripMenuItem->Checked = true;
+		japan106ToolStripMenuItem->Checked = false;
+		ReadyMeasuring();
+	}
+
+	System::Void Form1::japan106ToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
+	{
+		layout = layoutJapan106;
+		us104ToolStripMenuItem->Checked = false;
+		japan106ToolStripMenuItem->Checked = true;
+		ReadyMeasuring();
 	}
 }
 

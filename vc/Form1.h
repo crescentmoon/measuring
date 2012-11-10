@@ -4,6 +4,9 @@
 enum hand;
 struct data;
 
+/* キーボードのレイアウト */
+typedef enum { layoutUS104, layoutJapan106 } layout_t;
+
 namespace measuring {
 
 	using namespace System;
@@ -49,6 +52,7 @@ namespace measuring {
 		System::String^ inputed;
 		System::DateTime^ firstTime;
 		System::String^ fileName;
+		layout_t layout;
 
 		void InitializeData();
 		void FinalizeData();
@@ -74,6 +78,9 @@ namespace measuring {
 	private: System::Windows::Forms::ToolStripMenuItem^  saveAsToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripSeparator^  toolStripMenuItem1;
 	private: System::Windows::Forms::ToolStripMenuItem^  closeToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  layoutToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  us104ToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  japan106ToolStripMenuItem;
 
 	private:
 		/// <summary>
@@ -102,6 +109,9 @@ namespace measuring {
 			this->saveAsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->closeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->layoutToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->us104ToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->japan106ToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->splitContainer1))->BeginInit();
 			this->splitContainer1->Panel1->SuspendLayout();
 			this->splitContainer1->Panel2->SuspendLayout();
@@ -201,7 +211,8 @@ namespace measuring {
 			// 
 			// menuStrip1
 			// 
-			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->fileToolStripMenuItem});
+			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->fileToolStripMenuItem, 
+				this->layoutToolStripMenuItem});
 			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
 			this->menuStrip1->Size = System::Drawing::Size(950, 24);
@@ -249,6 +260,30 @@ namespace measuring {
 			this->closeToolStripMenuItem->Text = L"&Close";
 			this->closeToolStripMenuItem->Click += gcnew System::EventHandler(this, &Form1::closeToolStripMenuItem_Click);
 			// 
+			// layoutToolStripMenuItem
+			// 
+			this->layoutToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->us104ToolStripMenuItem, 
+				this->japan106ToolStripMenuItem});
+			this->layoutToolStripMenuItem->Name = L"layoutToolStripMenuItem";
+			this->layoutToolStripMenuItem->Size = System::Drawing::Size(51, 20);
+			this->layoutToolStripMenuItem->Text = L"&Layout";
+			// 
+			// us104ToolStripMenuItem
+			// 
+			this->us104ToolStripMenuItem->Checked = true;
+			this->us104ToolStripMenuItem->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->us104ToolStripMenuItem->Name = L"us104ToolStripMenuItem";
+			this->us104ToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->us104ToolStripMenuItem->Text = L"&US 104";
+			this->us104ToolStripMenuItem->Click += gcnew System::EventHandler(this, &Form1::us104ToolStripMenuItem_Click);
+			// 
+			// japan106ToolStripMenuItem
+			// 
+			this->japan106ToolStripMenuItem->Name = L"japan106ToolStripMenuItem";
+			this->japan106ToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->japan106ToolStripMenuItem->Text = L"&Japan 106";
+			this->japan106ToolStripMenuItem->Click += gcnew System::EventHandler(this, &Form1::japan106ToolStripMenuItem_Click);
+			// 
 			// Form1
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
@@ -280,5 +315,7 @@ namespace measuring {
 	private: System::Void openToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
 	private: System::Void saveToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
 	private: System::Void saveAsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void us104ToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void japan106ToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
 };
 }
